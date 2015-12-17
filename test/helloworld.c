@@ -12,6 +12,13 @@ int main(){
 	unsigned int us_int;
 	b++;
 	--a;
+	aa=122345.6;
+	bdsfsd_=-12345;
+	fded=--1234e123;
+	f=1.e2342;
+	a=+1.1e-2;
+	s=1.123.1;
+	
 	int c=a>b[1][2]? 1:0;
 	char c='\t\t\'';
 	if(a==1){

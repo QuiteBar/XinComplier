@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{99A24E7B-3424-4E88-B26A-256A2144AB2F}</ProjectGuid>
+    <ProjectGuid>{E306F2F3-4239-41D8-A506-B8C57F358AB6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Lexical</RootNamespace>
+    <RootNamespace>wordcolor</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -78,19 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\public\file.h" />
-    <ClInclude Include="..\..\public\Lexical\hash.h" />
-    <ClInclude Include="..\..\public\Lexical\lex.h" />
-    <ClInclude Include="..\..\public\Lexical\lex_word_list.h" />
-    <ClInclude Include="..\..\public\Lexical\pretreat.h" />
-    <ClInclude Include="..\..\public\Lexical\xin_structs.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\public\file.c" />
-    <ClCompile Include="..\..\public\Lexical\hash.c" />
-    <ClCompile Include="..\..\public\Lexical\lex.c" />
-    <ClCompile Include="..\..\public\Lexical\lexical_test.c" />
-    <ClCompile Include="..\..\public\Lexical\pretreat.c" />
+    <ClCompile Include="wordcolortest.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

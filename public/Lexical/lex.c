@@ -3,22 +3,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-static wordlist* res_tmp;
-static wordlist* err_tmp;
-
+/*
+	initlize lexical: add key,operate,constant etc into hash table
+*/
 void lexinit() {
 	int size;
 	int i;
 	dynamicstr* tmp;
 	LexResult = (wordlist*)malloc(sizeof(wordlist));
-	res_tmp = LexResult;
-	res_tmp->next = NULL;
+	LexResult->next = NULL;
 
-	LexError = (wordlist*)malloc(sizeof(wordlist));
-	err_tmp = LexError;
-	err_tmp->next = NULL;
-	
+	LexError = (errorlist*)malloc(sizeof(errorlist));
+	LexError->next = NULL;
+
 	hashinit(XHashTable, MAXKEY);
 
 	size = sizeof(XBO_list) / sizeof(key_word);
@@ -40,6 +37,9 @@ void lexinit() {
 	}
 }
 
+/*
+	insert a wordlist node into a list
+*/
 void wordlist_insert(wordhash* hashkey,wordlist** into) {
 	wordlist* tmp = (wordlist*)malloc(sizeof(wordlist));
 	tmp->hashkey = hashkey;
@@ -48,6 +48,21 @@ void wordlist_insert(wordhash* hashkey,wordlist** into) {
 	(*into) = tmp;
 }
 
+/*
+	insert a errorlist node into a list
+*/
+void errorlist_insert(wordhash* hashkey, errorlist**into,int linenum) {
+	errorlist* tmp = (errorlist*)malloc(sizeof(errorlist));
+	tmp->hashkey = hashkey;
+	tmp->linenum = linenum;
+	tmp->next = NULL;
+	(*into)->next = tmp;
+	(*into) = tmp;
+}
+
+/*
+	make a result node
+*/
 analyseres* mkresnode(char* cp, int len, unsigned int token) {
 	analyseres* tmpres = (analyseres*)malloc(sizeof(analyseres));
 	dynamicstr* tmpds = mkdynamicstr(cp, len);
@@ -70,7 +85,69 @@ int is_letter(char c) {
 
 analyseres* dig_begin(char *cp) {
 	analyseres* res = NULL;
-	
+	char* tmpc = cp + 1;
+	while (is_digital(*tmpc))
+		tmpc++;
+	if (*tmpc == '.') {
+		tmpc++;
+		if (is_digital(*tmpc)) {
+			while (is_digital(*tmpc))
+				tmpc++;
+			if (*tmpc == 'e' || *tmpc == 'E') {
+				tmpc++;
+				if (is_digital(*tmpc)) {
+					while (is_digital(*tmpc))
+						tmpc++;
+					res = mkresnode(cp, tmpc - cp, XCON_SCINUM);
+				}
+				else if (*tmpc == '+' || *tmpc == '-') {
+					tmpc++;
+					if (!is_digital(*tmpc)) {
+						res = mkresnode(cp, tmpc - cp, XLEX_ERROR);
+					}
+					else {
+						while (is_digital(*tmpc))
+							tmpc++;
+						res = mkresnode(cp, tmpc - cp, XCON_SCINUM);
+					}
+				}
+				else {
+					res = mkresnode(cp, tmpc - cp, XLEX_ERROR);
+				}
+			}
+			else {
+				res = mkresnode(cp, tmpc - cp, XCON_FLOAT);
+			}
+		}
+		else {
+			res = mkresnode(cp, tmpc - cp, XLEX_ERROR);
+		}
+	}
+	else if (*tmpc == 'e' || *tmpc == 'E') {
+		tmpc++;
+		if (is_digital(*tmpc)) {
+			while (is_digital(*tmpc))
+				tmpc++;
+			res = mkresnode(cp, tmpc - cp, XCON_SCINUM);
+		}
+		else if (*tmpc == '+' || *tmpc == '-') {
+			tmpc++;
+			if (!is_digital(*tmpc)) {
+				res = mkresnode(cp, tmpc - cp, XLEX_ERROR);
+			}
+			else {
+				while (is_digital(*tmpc))
+					tmpc++;
+				res = mkresnode(cp, tmpc - cp, XCON_SCINUM);
+			}
+		}
+		else {
+			res = mkresnode(cp, tmpc - cp, XLEX_ERROR);
+		}
+	}
+	else {
+		res = mkresnode(cp, tmpc - cp, XCON_INT);
+	}
 	return res;
 }
 
@@ -158,7 +235,9 @@ analyseres* add_begin(char* cp) {
 		res = mkresnode(cp, 2, XOP_INC);
 	}
 	else if (is_digital(*(cp + 1))) {
-
+		analyseres* tmpar = dig_begin(cp + 1);
+		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
+		free(tmpar);
 	}
 	else {
 		res = mkresnode(cp, 1, XOP_PLUS);
@@ -175,7 +254,9 @@ analyseres* sub_begin(char* cp) {
 		res = mkresnode(cp, 2, XOP_POINTTO);
 	}
 	else if (is_digital(*(cp + 1))) {
-
+		analyseres* tmpar = dig_begin(cp + 1);
+		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
+		free(tmpar);
 	}
 	else {
 		res = mkresnode(cp, 1, XOP_MINUS);
@@ -236,17 +317,54 @@ analyseres* assign_begin(char* cp) {
 	return res;
 }
 
-analyseres* error_begin(char* cp) {
+analyseres* and_begin(char* cp) {
 	analyseres* res = NULL;
+	if (*(cp + 1) == '&') {
+		mkresnode(cp, 2, XOP_ANDADN);
+	}
+	else {
+		mkresnode(cp, 1, XOP_AND);
+	}
 	return res;
 }
 
-dynamicstr* lexanalyse(char* str) {
+analyseres* or_begin(char* cp) {
+	analyseres* res = NULL;
+	if (*(cp + 1) == '|') {
+		mkresnode(cp, 2, XOP_ANDADN);
+	}
+	else {
+		mkresnode(cp, 1, XOP_AND);
+	}
+	return res;
+}
+
+analyseres* error_begin(char* cp) {
+	analyseres* res = NULL;
+	char * tmp = cp + 1;
+	while (*tmp) {
+		if (*tmp == '\n' || *tmp == '\r' || *tmp == ' ' || *tmp == '\t')
+			break;
+		tmp++;
+	}
+	res=mkresnode(cp, tmp - cp, XLEX_ERROR);
+	return res;
+}
+
+/*
+	the main funtion of lexical
+	*str : the source code after pretreatment
+*/
+void lexanalyse(char* str) {
+
 	char * p = str;
 	char c;
+	int linenum = 0;
 	analyseres * tmpres;
-	dynamicstr * tmpds;
 	wordhash * tmpwh;
+	wordlist* res_tmp = LexResult;
+	errorlist* err_tmp = LexError;
+
 	while ( *p != '\0') {
 		c = *p;
 		tmpres = NULL;
@@ -284,13 +402,13 @@ dynamicstr* lexanalyse(char* str) {
 			tmpres = mkresnode(p, 1, XOP_MOD);
 			break;
 		case '&':
-			tmpres = mkresnode(p, 1, XOP_AND);
+			tmpres = and_begin(p);
 			break;
 		case '^':
 			tmpres = mkresnode(p, 1, XOP_XOR);
 			break;
 		case '|':
-			tmpres = mkresnode(p, 1, XOP_OR);
+			tmpres = or_begin(p);
 			break;
 		case '~':
 			tmpres = mkresnode(p, 1, XOP_NOTBIT);
@@ -349,7 +467,11 @@ dynamicstr* lexanalyse(char* str) {
 		case '}':
 			tmpres = mkresnode(p, 1, XBO_END);
 			break;
-		case ' ':case'\t':case ' \r':case '\n':
+		case '\n':
+			tmpres = mkresnode(p, 1, XBO_NEWLINE);
+			linenum++;
+			break;
+		case ' ':case'\t':case ' \r':
 			p += 1;
 			continue;
 		default:
@@ -357,13 +479,13 @@ dynamicstr* lexanalyse(char* str) {
 			break;
 		}
 		if (tmpres != NULL) {
-			//printf("%s\t:0x%08x\n", tmpres->analysestr->str, tmpres->analytoken);
 			tmpwh = word_insert(tmpres->analysestr, tmpres->analytoken);
 			if (tmpres->analytoken != XLEX_ERROR) {
 				wordlist_insert(tmpwh, &res_tmp);
 			}
 			else {
-				wordlist_insert(tmpwh, &err_tmp);
+				wordlist_insert(tmpwh, &res_tmp);
+				errorlist_insert(tmpwh, &err_tmp,linenum);
 			}
 			p += tmpres->analysestr->len;
 		}

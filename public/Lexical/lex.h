@@ -6,8 +6,8 @@
 #include "xin_structs.h"
 
 wordlist* LexResult;
-wordlist* LexError;
+errorlist* LexError;
 
 void lexinit();
-dynamicstr* lexanalyse(char* str);
+void lexanalyse(char* str);
 #endif // !LEX_H

@@ -5,6 +5,10 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lexical", "Lexical\Lexical.vcxproj", "{99A24E7B-3424-4E88-B26A-256A2144AB2F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pretreatment", "..\Pretreatment\Pretreatment\Pretreatment.vcxproj", "{D9A90863-52FD-43EC-8BEB-0E278B491EEA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wordcolor", "..\wordcolor\wordcolor.vcxproj", "{E306F2F3-4239-41D8-A506-B8C57F358AB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,6 +19,14 @@ Global
 		{99A24E7B-3424-4E88-B26A-256A2144AB2F}.Debug|Win32.Build.0 = Debug|Win32
 		{99A24E7B-3424-4E88-B26A-256A2144AB2F}.Release|Win32.ActiveCfg = Release|Win32
 		{99A24E7B-3424-4E88-B26A-256A2144AB2F}.Release|Win32.Build.0 = Release|Win32
+		{D9A90863-52FD-43EC-8BEB-0E278B491EEA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D9A90863-52FD-43EC-8BEB-0E278B491EEA}.Debug|Win32.Build.0 = Debug|Win32
+		{D9A90863-52FD-43EC-8BEB-0E278B491EEA}.Release|Win32.ActiveCfg = Release|Win32
+		{D9A90863-52FD-43EC-8BEB-0E278B491EEA}.Release|Win32.Build.0 = Release|Win32
+		{E306F2F3-4239-41D8-A506-B8C57F358AB6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E306F2F3-4239-41D8-A506-B8C57F358AB6}.Debug|Win32.Build.0 = Debug|Win32
+		{E306F2F3-4239-41D8-A506-B8C57F358AB6}.Release|Win32.ActiveCfg = Release|Win32
+		{E306F2F3-4239-41D8-A506-B8C57F358AB6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

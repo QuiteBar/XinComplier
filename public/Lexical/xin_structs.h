@@ -27,4 +27,10 @@ typedef struct analyseres {
 	int analytoken;
 }analyseres;
 
+typedef struct errorlist {
+	wordhash* hashkey;
+	int linenum;
+	struct errorlist* next;
+}errorlist;
+
 #endif //XIN_STRUCTS_H

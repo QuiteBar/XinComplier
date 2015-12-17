@@ -4,48 +4,66 @@
 #include"../file.h"
 #include"lex_word_list.h"
 #include "lex.h"
+#include "pretreat.h"
+#include<Windows.h>
+
+void colorwords(wordlist* list) {
+	int token;
+	HANDLE hd = GetStdHandle(STD_OUTPUT_HANDLE);
+	
+	while (list != NULL) {
+		token = list->hashkey->tokencode;
+		token = token >> 28;
+		switch (token) {
+		case 0:
+			SetConsoleTextAttribute(hd, FOREGROUND_GREEN);
+			break;
+		case 1:
+			SetConsoleTextAttribute(hd, FOREGROUND_RED);
+			break;
+		case 2:
+			SetConsoleTextAttribute(hd, FOREGROUND_RED | FOREGROUND_GREEN);
+			break;
+		case 3:
+			SetConsoleTextAttribute(hd, FOREGROUND_RED | FOREGROUND_BLUE);
+			break;
+		case 4:
+			SetConsoleTextAttribute(hd, FOREGROUND_BLUE | FOREGROUND_GREEN);
+			break;
+		default:
+			SetConsoleTextAttribute(hd, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			break;
+		}
+		printf("%s ", list->hashkey->word->str);
+		list = list->next;
+	}
+	printf("\n");
+	SetConsoleTextAttribute(hd, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+}
+
 
 int main() {
 
-
-	//printf("%s\n", buf);
-	//int k = sizeof(XOP_list);
-	////printf("%d", k);
-	//for (int i = 0; i < k / 8; i++) {
-	//	printf("0x%08x %s\n", XOP_list[i].tokencode, XOP_list[i].word);
-	//}
-	//k = sizeof(XBO_list);
-	////printf("%d", k);
-	//for (int i = 0; i < k / 8; i++) {
-	//	printf("0x%08x %s\n", XBO_list[i].tokencode, XBO_list[i].word);
-	//}
-	char file[] = "e:\\Xin\\test\\helloworld.c.pre";
+	char file[] = "e:\\XinComplier\\test\\helloworld.c";
 	char* buf = readwholefile(file);
-	lexinit();
-	for (int i = 0; i < MAXKEY; i++) {
-		if (XHashTable[i].tokencode) {
-			wordhash *tmp = XHashTable + i;
-			while (tmp) {
-				//printf("0x%08x 0x%08x %s\n", i, tmp->tokencode, tmp->word->str);
-				tmp = tmp->next;
-			}
-		}
+	if (buf == NULL) {
+		printf("file read error!");
+		return 0;
 	}
+	pretreat(buf, strlen(buf));
+	lexinit();
 	lexanalyse(buf);
 	wordlist* tmp;
 
-	printf("word find\n");
+	printf("Lexical Result\n");
 	tmp = LexResult->next;
-	while (tmp != NULL) {
-		printf("%s\t0x%08x\n ", tmp->hashkey->word->str,tmp->hashkey->tokencode);
-		tmp = tmp->next;
-	}
-
+	colorwords(tmp);
 	printf("error find\n");
-	tmp = LexError->next;
-	while (tmp != NULL) {
-		printf("%s\t0x%08x\n", tmp->hashkey->word->str, tmp->hashkey->tokencode);
-		tmp = tmp->next;
+
+	errorlist* tmperr = LexError->next;
+	while (tmperr != NULL) {
+		printf("line:%d\t%s\n", tmperr->linenum, tmperr->hashkey->word->str);
+		tmperr = tmperr->next;
 	}
 	return 0;
 }

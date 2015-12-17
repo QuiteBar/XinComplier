@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\public\Lexical\xin_structs.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\public\Lexical\pretreat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\public\file.c">
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\public\Lexical\lex.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\Lexical\pretreat.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
