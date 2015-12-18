@@ -356,7 +356,6 @@ analyseres* error_begin(char* cp) {
 	*str : the source code after pretreatment
 */
 void lexanalyse(char* str) {
-
 	char * p = str;
 	char c;
 	int linenum = 0;

@@ -57,7 +57,18 @@ int main() {
 
 	printf("Lexical Result\n");
 	tmp = LexResult->next;
+	while (tmp != NULL) {
+		if (tmp->hashkey->tokencode == XBO_NEWLINE) {
+			tmp = tmp->next;
+			continue;
+		}
+		printf("0x%08x\t%s\n", tmp->hashkey->tokencode, tmp->hashkey->word->str);
+		tmp = tmp->next;
+	}
+	tmp = LexResult->next;
 	colorwords(tmp);
+
+
 	printf("error find\n");
 
 	errorlist* tmperr = LexError->next;
