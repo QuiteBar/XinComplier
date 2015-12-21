@@ -1,4 +1,4 @@
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include"../file.h"
@@ -42,10 +42,16 @@ void colorwords(wordlist* list) {
 }
 
 
-int main() {
+int main(int argc,char* argv[]) {
 
-	char file[] = "e:\\XinComplier\\test\\helloworld.c";
-	char* buf = readwholefile(file);
+	//char file[] = "e:\\XinComplier\\test\\helloworld.c";
+	//char file[256];
+	//memset(file,0,256);
+	//scanf("%s", file);
+	if (argc != 2) {
+		return 0;
+	}
+	char* buf = readwholefile(argv[1]);
 	if (buf == NULL) {
 		printf("file read error!");
 		return 0;
@@ -68,10 +74,10 @@ int main() {
 	tmp = LexResult->next;
 	colorwords(tmp);
 
-
-	printf("error find\n");
-
 	errorlist* tmperr = LexError->next;
+	if (tmperr != NULL) {
+		printf("error find\n");
+	}
 	while (tmperr != NULL) {
 		printf("line:%d\t%s\n", tmperr->linenum, tmperr->hashkey->word->str);
 		tmperr = tmperr->next;

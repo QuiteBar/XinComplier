@@ -320,10 +320,10 @@ analyseres* assign_begin(char* cp) {
 analyseres* and_begin(char* cp) {
 	analyseres* res = NULL;
 	if (*(cp + 1) == '&') {
-		mkresnode(cp, 2, XOP_ANDADN);
+		res = mkresnode(cp, 2, XOP_ANDADN);
 	}
 	else {
-		mkresnode(cp, 1, XOP_AND);
+		res = mkresnode(cp, 1, XOP_AND);
 	}
 	return res;
 }
@@ -331,10 +331,10 @@ analyseres* and_begin(char* cp) {
 analyseres* or_begin(char* cp) {
 	analyseres* res = NULL;
 	if (*(cp + 1) == '|') {
-		mkresnode(cp, 2, XOP_ANDADN);
+		res = mkresnode(cp, 2, XOP_OROR);
 	}
 	else {
-		mkresnode(cp, 1, XOP_AND);
+		res = mkresnode(cp, 1, XOP_OR);
 	}
 	return res;
 }
