@@ -170,6 +170,7 @@ static key_word XKEY_list[] = {
 #define XCON_FLOAT	0x30000003
 #define XCON_STRING	0x30000004
 #define XCON_SCINUM	0x30000005
+#define XCON_HEX	0x30000006
 
 //idenfine
 #define XIDEN		0x40000000

@@ -83,6 +83,13 @@ int is_letter(char c) {
 	return 0;
 }
 
+int is_hexnumber(char c) {
+	if (c >= '0'&&c <= '9' || c >= 'a'&&c <= 'f' || c >= 'A'&&c <= 'F') {
+		return 1;
+	}
+	return 0;
+}
+
 analyseres* dig_begin(char *cp) {
 	analyseres* res = NULL;
 	char* tmpc = cp + 1;
@@ -234,11 +241,11 @@ analyseres* add_begin(char* cp) {
 	if (*(cp + 1) == '+') {
 		res = mkresnode(cp, 2, XOP_INC);
 	}
-	else if (is_digital(*(cp + 1))) {
-		analyseres* tmpar = dig_begin(cp + 1);
-		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
-		free(tmpar);
-	}
+//	else if (is_digital(*(cp + 1))) {
+//		analyseres* tmpar = dig_begin(cp + 1);
+//		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
+//		free(tmpar);
+//	}
 	else {
 		res = mkresnode(cp, 1, XOP_PLUS);
 	}
@@ -253,11 +260,11 @@ analyseres* sub_begin(char* cp) {
 	else if (*(cp + 1) == '>') {
 		res = mkresnode(cp, 2, XOP_POINTTO);
 	}
-	else if (is_digital(*(cp + 1))) {
-		analyseres* tmpar = dig_begin(cp + 1);
-		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
-		free(tmpar);
-	}
+//	else if (is_digital(*(cp + 1))) {
+//		analyseres* tmpar = dig_begin(cp + 1);
+//		res = mkresnode(cp, tmpar->analysestr->len + 1, tmpar->analytoken);
+//		free(tmpar);
+//	}
 	else {
 		res = mkresnode(cp, 1, XOP_MINUS);
 	}
@@ -339,6 +346,19 @@ analyseres* or_begin(char* cp) {
 	return res;
 }
 
+analyseres* zero_begin(char* cp) {
+	analyseres* res = NULL;
+	if (*(cp + 1) != 'x' && *(cp + 1) != 'X' && !is_hexnumber(*(cp+2))) {
+		return dig_begin(cp);
+	}
+	char* p = cp + 2;
+	while (is_hexnumber(*p)) {
+		p++;
+	}
+	res = mkresnode(cp, p - cp, XCON_HEX);
+	return res;
+}
+
 analyseres* error_begin(char* cp) {
 	analyseres* res = NULL;
 	char * tmp = cp + 1;
@@ -368,7 +388,10 @@ void lexanalyse(char* str) {
 		c = *p;
 		tmpres = NULL;
 		switch (c) {
-		case '0':case '1':case '2':case '3':case '4':case '5':
+		case '0':
+			tmpres = zero_begin(p);
+			break;
+		case '1':case '2':case '3':case '4':case '5':
 		case '6':case '7':case '8':case '9':
 			tmpres = dig_begin(p);
 			break;

@@ -20,6 +20,7 @@ void pretreat(char* buf, int buflen) {
 				i += 2;
 				while (buf[i]) {
 					if (buf[i++] == '\n') {
+						tmp[usefulchar++] = buf[i - 1];
 						break;
 					}
 				}
@@ -28,6 +29,9 @@ void pretreat(char* buf, int buflen) {
 			else if (buf[i + 1] == '*') {
 				i += 2;
 				while (buf[i]) {
+					if (buf[i] == '\n') {
+						tmp[usefulchar++] = '\n';
+					}
 					if (buf[i] == '*'&&buf[i + 1] == '/') {
 						i += 2;
 						break;
